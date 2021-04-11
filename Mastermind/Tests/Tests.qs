@@ -55,7 +55,7 @@
                     use (inputs, output) = (Qubit[registerLength], Qubit());
                     within {
                         ApplyXorInPlace(actualState, LittleEndian(inputs));
-                        AllowAtMostNCallsCA(0, Measure, "You are not allowed to use measurements");
+                        //AllowAtMostNCallsCA(0, Measure, "You are not allowed to use measurements");
                     } apply {
                         MastermindQuantum.Task_1_3_CompareAndIncrement(expectedState, LittleEndian(inputs), LittleEndian([output]));
                     }
@@ -76,34 +76,33 @@
         Message("Task_1_3_SimpleTest passed.");
     }
 
-//     @Test("QuantumSimulator")
-//     operation Task_1_6_SimpleTest () : Unit {
-//         use target = Qubit() 
-//         {
-//             use currentGuess = Qubit[8]
-//             {
-//                 within
-//                 {
-//                     X(currentGuess[0]);
-//                     X(currentGuess[2]);
-//                 }
-//                 apply
-//                 {
-//                     let registers = Chunks(2, currentGuess);
-//                     let regLEs = Mapped(LittleEndian(_), registers);
-//                     MastermindQuantum.Task_1_6_MastermindOracle(
-//                         regLEs,
-//                         [[1, 0, 1, 2, 1, 4]],
-//                         target
-//                     );
-//                 }
-//                 AssertMeasurement([PauliZ], [target], One, "Oracle replied with False when it should have said True.");
-//                 Reset(target);
-//                 ResetAll(currentGuess);
-//             }
-//         }
+    @Test("QuantumSimulator")
+    operation Task_1_6_SimpleTest () : Unit {
+        use target = Qubit() 
+        {
+            use currentGuess = Qubit[8]
+            {
+                within
+                {
+                    X(currentGuess[0]);
+                    X(currentGuess[2]);
+                }
+                apply
+                {
+                    let registers = Chunks(2, currentGuess);
+                    let regLEs = Mapped(LittleEndian(_), registers);
+                    MastermindQuantum.Task_1_6_MastermindOracle(
+                        regLEs,
+                        [[1, 0, 1, 2, 1, 4]],
+                        target
+                    );
+                }
+                AssertMeasurement([PauliZ], [target], One, "Oracle replied with False when it should have said True.");
+                Reset(target);
+                ResetAll(currentGuess);
+            }
+        }
         
-//         Message("Task_1_6_SimpleTest passed.");
-//     }
-// }
+        Message("Task_1_6_SimpleTest passed.");
+    }
 }
