@@ -30,6 +30,14 @@ namespace MastermindQuantum
             using var sim = new QuantumSimulator();
 
             var restored = await HelloQ.Run(sim);
+            //DEBUG
+            int[,] puzzle6 = { 
+                {0,3,1,2,1,1},
+                {0,3,1,2,2,1},
+                {0,3,1,2,3,1}
+            };
+            ShowGrid(puzzle6,1);
+            Pause();
 
             //MAIN            
             var puzzleToRun = args.Length > 0 ? args[0] : "all";
@@ -43,11 +51,11 @@ namespace MastermindQuantum
             {
                 // Test solving a 4x4 Mastermind puzzle using XXX computing.
                 // Missing numbers are denoted by 0.
-                int[] answer4 = { 2,3,4,1 };
+                int[] answer4 = { 2,3,4,1, 4, 0 };
                 int[] color4 = { 1,2,3,4 };
-                int[] puzzle4 = { 0,0,0,0 };
+                int[,] puzzle4 = { {0,0,0,0,0,0} };
                 Console.WriteLine("Solving 4slot-4colors using XXX computing.");
-                ShowGrid(puzzle4);
+                ShowGrid(puzzle4,1);
                 bool resultFound = false;
                 //bool resultFound = mastermindClassic.SolveMastermindClassic(puzzle4, color4);
                 //bool resultFound = mastermindQuantum.QuantumSolve(puzzle4, color4, sim).Result;
@@ -64,16 +72,19 @@ namespace MastermindQuantum
         /// <param name="resultFound">True if a result was found for the puzzle</param>
         /// <param name="puzzle">The puzzle to verify</param>
         /// <param name="answer">The correct puzzle result</param>
-        static void VerifyAndShowResult(bool resultFound, int[] puzzle, int[] answer) 
+        static void VerifyAndShowResult(bool resultFound, int[,] puzzle, int[] answer) 
         {
             if (!resultFound) 
                 Console.WriteLine("No solution found.");
             else 
             {
-                bool good = puzzle.Cast<int>().SequenceEqual(answer.Cast<int>());
+                int[] lastPuzzle = new int[puzzle.GetLength(0)];
+                for(int i = 0; i < lastPuzzle.Length; i++)
+                    lastPuzzle[i] = puzzle[0, i];
+                bool good = lastPuzzle.Cast<int>().SequenceEqual(answer.Cast<int>());
                 if (good)
                     Console.WriteLine("Result verified correct.");
-                ShowGrid(puzzle);
+                ShowGrid(puzzle,1);
             }
             Pause();
         }
@@ -95,20 +106,28 @@ namespace MastermindQuantum
         /// <summary>
         /// Display the puzzle
         /// </summary>
-        static void ShowGrid(int[] puzzle)
+        static void ShowGrid(int[,] puzzle, int withPegs = 0)
         {
-            int size = puzzle.GetLength(0);
-            for (int i = 0; i < 1; i++)
+            char[] colorChar = {'R', 'G', 'B', 'Y', 'P', 'O'};
+            char[] pegsChar = {'•', 'o'};
+            int trials = puzzle.GetLength(0);
+            int size = puzzle.GetLength(1) + (withPegs>0?-2:0);
+            for (int i = 0; i < trials; i++)
             {
                 Console.WriteLine(new String('-', 4 * size + 1));
                 for (int j = 0; j < size; j++)
                 {
-                    if (puzzle[i] == 0)
-                        Console.Write("| X ");
-                    else
-                        Console.Write($"| {puzzle[i], 1} ");
+                    Console.Write($"| {colorChar[puzzle[i,j]], 1} ");
                 }
-                Console.WriteLine("|");
+                Console.Write("|");
+                
+                if(withPegs>0){
+                    for (int j = 0; j < puzzle[i, size]; j++)
+                        Console.Write($"{pegsChar[0]}");
+                    for (int j = 0; j < puzzle[i, size+1]; j++)
+                        Console.Write($"{pegsChar[1]}");
+                }
+                Console.WriteLine();
             }
             Console.WriteLine(new String('-', 4 * size + 1));
         }
