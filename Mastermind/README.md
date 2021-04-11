@@ -48,3 +48,30 @@ For example, `dotnet run 4s4c` will run the Quantum solution for a 4 colors 4 sl
 - [Program.cs](Program.cs): C# code with Mastermind test problems to solve using Quantum code. It then checks and displays the results.
 - [MastermindQuantum.cs](MastermindQuantum.cs): C# code to solve a Mastermind puzzle by transforming it into a XXX problem (YYY constraints), and call the Quantum SolvePuzzle operation to solve it.
 - [host.csproj](host.csproj): Main project.
+
+## Sample Output ##
+
+dotnet run 4s4c
+```
+Answer of current trial.
+-----------------
+| G | B | Y | R |••••
+-----------------
+Solving 4slot-4colors using Classical computing.
+Result verified correct.
+-----------------    
+| R | R | R | R |•   
+-----------------    
+| R | R | R | G |oooo
+-----------------
+...
+-----------------
+| G | B | B | Y |••o
+-----------------
+| G | B | Y | R |••••
+-----------------
+
+Press any key to continue...
+
+Classical Computing used 109 trials !
+```
