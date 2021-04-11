@@ -38,14 +38,15 @@ To run the sample, use the `dotnet run` command from your terminal.
 This will run all the test puzzles. 
 You can also choose a specific puzzle to solve by adding the puzzle name as below
     
--   4s4c : test Quantum algorthm on a 4 colors 4 slots puzzle
+-   4s4c : test Classical algorthm on a 4 colors 4 slots puzzle
+-   4s4cQ : test Quantum algorthm on a 4 colors 4 slots puzzle
 
-For example, `dotnet run 4s4c` will run the Quantum solution for a 4 colors 4 slots puzzle
+For example, `dotnet run 4s4cQ` will run the Quantum solution for a 4 colors 4 slots puzzle
 
 ## Manifest ##
 
-- [XXXGrover.qs](XXXGrover.qs): Q# code implementing XXX
 - [Program.cs](Program.cs): C# code with Mastermind test problems to solve using Quantum code. It then checks and displays the results.
+- [MastermindClassic.cs](MastermindClassic.cs): C# code to solve a Mastermind puzzle by traditional algorithm, try to min-max the combination to solve it
 - [MastermindQuantum.cs](MastermindQuantum.cs): C# code to solve a Mastermind puzzle by transforming it into a XXX problem (YYY constraints), and call the Quantum SolvePuzzle operation to solve it.
 - [host.csproj](host.csproj): Main project.
 
