@@ -51,14 +51,14 @@ namespace MastermindQuantum
             if (puzzleToRun == "4s4c" || puzzleToRun == "all") 
             {
                 // Test solving a 4s4c Mastermind puzzle using classical computing
-                int[] answer4 = { 1,2,3,0, 4,0 };
-                int[] color4 = { 1,2,3,0 };
+                long[] answer4 = { 1,2,3,0, 4,0 };
+                long[] color4 = { 1,2,3,0 };
                 bool resultFound = false;
 
                 Console.WriteLine("Answer of current trial.");
-                ShowGrid(new List<int[]>(){answer4}, 1);
+                ShowGrid(new List<long[]>(){answer4}, 1);
 
-                List<int[]> puzzle4 = new List<int[]>();
+                List<long[]> puzzle4 = new List<long[]>();
                 Console.WriteLine("Solving 4slot-4colors using Classical computing.");
                 resultFound = mastermindClassic.Solve(puzzle4, answer4);
 
@@ -69,22 +69,67 @@ namespace MastermindQuantum
             if (puzzleToRun == "4s4cQ" || puzzleToRun == "all") 
             {
                 // Test solving a 4s4c Mastermind puzzle using quantum computing.
-                int[] answer4 = { 1,2,3,0, 4,0 };
-                int[] color4 = { 1,2,3,0 };
-                bool resultFound = false;
+                long[] answer4 = { 1,2,3,0, 4,0 };
+                long[] color4 = { 1,2,3,0 };
 
                 Console.WriteLine("Answer of current trial.");
-                ShowGrid(new List<int[]>(){answer4}, 1);
+                ShowGrid(new List<long[]>(){answer4}, 1);
 
-                List<int[]> puzzleQ = new List<int[]>();
-                // Console.WriteLine("Solving 4slot-4colors using Quantum computing.");
-                // resultFound = mastermindQuantum.QuantumSolve(puzzleQ, answer4, sim).Result;
-                // Console.WriteLine($"Quantum Computing used {puzzleQ.Count} trials !");
-                VerifyAndShowResult(resultFound, puzzleQ, answer4);
-                Console.WriteLine($"Quantum Computing used {puzzleQ.Count} trials !");
+                Console.WriteLine("Solving 4slot-4colors using Quantum computing.");
+
+                var puzzleArray = new QArray<QArray<long>>();
+                foreach (long[] condition in new List<long[]>(){answer4})
+                {
+                    puzzleArray.Append(new QArray<long>(condition));
+                }
+                var (resultFromQuantum, resultFound) = MastermindQuantum.GroversForMastermind.Run(sim, puzzleArray).Result;
+                
+                Console.WriteLine("Obtained result from Quantum simulator.");
+                long[] answerFromQuantum = {-1, -1, -1 ,-1};
+                int index = 0;
+                foreach(long val in resultFromQuantum)
+                {
+                    answerFromQuantum[index] = val;
+                    index++;
+                }
+                VerifyAndShowResult(resultFound, new List<long[]>(){answer4}, answerFromQuantum);
                 Console.WriteLine();
             }
+            
+            if (puzzleToRun == "4s4cQ2" || puzzleToRun == "all") 
+            {
+                // Test solving a 4s4c Mastermind puzzle using quantum computing.
+                List<long[]> answer4 = new List<long[]>();
+                
+                answer4.Add(new long[]{1, 1, 1, 2, 2, 10});
+                answer4.Add(new long[]{1, 1, 2, 1, 2, 10});
+                answer4.Add(new long[]{1, 2, 1, 1, 2, 10});
 
+                long[] color4 = { 2, 1, 1, 1 };
+
+                Console.WriteLine("Answer of current trial.");
+                ShowGrid(answer4, 1);
+
+                Console.WriteLine("Solving 4slot-4colors using Quantum computing.");
+
+                var puzzleArray = new QArray<QArray<long>>();
+                foreach (long[] condition in answer4)
+                {
+                    puzzleArray.Append(new QArray<long>(condition));
+                }
+                var (resultFromQuantum, resultFound) = MastermindQuantum.GroversForMastermind.Run(sim, puzzleArray).Result;
+                
+                Console.WriteLine("Obtained result from Quantum simulator.");
+                long[] answerFromQuantum = {-1, -1, -1 ,-1};
+                int index = 0;
+                foreach(long val in resultFromQuantum)
+                {
+                    answerFromQuantum[index] = val;
+                    index++;
+                }
+                VerifyAndShowResult(resultFound, answer4, answerFromQuantum);
+                Console.WriteLine();
+            }
             Console.WriteLine("Finished.");
         }
 
@@ -95,16 +140,19 @@ namespace MastermindQuantum
         /// <param name="resultFound">True if a result was found for the puzzle</param>
         /// <param name="puzzle">The puzzle to verify</param>
         /// <param name="answer">The correct puzzle result</param>
-        static void VerifyAndShowResult(bool resultFound, List<int[]> puzzle, int[] answer) 
+        static void VerifyAndShowResult(bool resultFound, List<long[]> puzzle, long[] answer) 
         {
             if (!resultFound) 
                 Console.WriteLine("No solution found.");
             else 
             {
-                bool good = puzzle[puzzle.Count - 1].Cast<int>().SequenceEqual(answer.Cast<int>());
+                bool good = puzzle[puzzle.Count - 1].Cast<long>().SequenceEqual(answer.Cast<long>());
                 if (good)
                     Console.WriteLine("Result verified correct.");
                 ShowGrid(puzzle,1);
+                Console.WriteLine("Answer from solver: ");
+                ShowGrid(new List<long[]>{answer}, 0, false);
+                
             }
             Pause();
         }
@@ -126,12 +174,20 @@ namespace MastermindQuantum
         /// <summary>
         /// Display the puzzle
         /// </summary>
-        static void ShowGrid(List<int[]> puzzle, int withPegs = 0)
+        static void ShowGrid(List<long[]> puzzle, int withPegs = 0, bool withCounts = true)
         {
             char[] colorChar = {'R', 'G', 'B', 'Y', 'P', 'O'};
             char[] pegsChar = {'•', 'o'};
             int trials = puzzle.Count;
-            int size = 6 + (withPegs>0?-2:0);
+            int size = 0;
+            if (withCounts)
+            {  
+                size = 6 + (withPegs>0?-2:0);
+            }
+            else
+            {
+                size = 4;
+            }
             for (int i = 0; i < trials; i++)
             {
                 Console.WriteLine(new String('-', 4 * size + 1));

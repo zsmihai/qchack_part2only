@@ -17,8 +17,8 @@ namespace MastermindQuantum{
         }
 
         public class Combination{
-            public int[] row;
-            public int this[int key]{
+            public long[] row;
+            public long this[int key]{
                 get => row[key];
                 set => row[key] = value;
             }
@@ -41,7 +41,7 @@ namespace MastermindQuantum{
             return new Outcome{ Black = exact_matches, White = partial_matches };
         }
 
-        public bool Solve(List<int[]> puzzle, int[] answer){
+        public bool Solve(List<long[]> puzzle, long[] answer){
             // generate all possible outcome
             List<Outcome> outcomes = new List<Outcome>();
             for(int i = 0; i <= 16; i++)
@@ -50,11 +50,11 @@ namespace MastermindQuantum{
 
             // generate all combinations
             List<Combination> combinations = new List<Combination>();
-            for(int i = 0; i < 4; i++)
-            for(int j = 0; j < 4; j++)
-            for(int k = 0; k < 4; k++)
-            for(int l = 0; l < 4; l++){
-                int[] c = new int[]{i, j, k, l, 4, 0};
+            for(long i = 0; i < 4; i++)
+            for(long j = 0; j < 4; j++)
+            for(long k = 0; k < 4; k++)
+            for(long l = 0; l < 4; l++){
+                long[] c = new long[]{i, j, k, l, 4, 0};
                 combinations.Add(new Combination(){ row = c });
             }
 
@@ -83,7 +83,7 @@ namespace MastermindQuantum{
 
                 // Try Guess
                 Outcome result = Check(minCombination, answerComb);
-                int[] currTrial = new int[]{
+                long[] currTrial = new long[]{
                     minCombination[0],
                     minCombination[1],
                     minCombination[2],

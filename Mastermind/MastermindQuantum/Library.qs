@@ -128,12 +128,12 @@ namespace MastermindQuantum {
         let conditionColors = conditionValues[0..3];
         let expectedExactMatches = conditionValues[4];
         let expectedPartialMatches = conditionValues[5];
-        use counters = Qubit[6]
+        use counters = Qubit[7]
         {
             within
             {
                 let exactCounter = LittleEndian(counters[0..2]);
-                let partialCounter = LittleEndian(counters[3..5]);
+                let partialCounter = LittleEndian(counters[3..6]);
 
                 let guessesLength = Length(currentGuess);
                 for i in 0 .. guessesLength-1
@@ -160,7 +160,7 @@ namespace MastermindQuantum {
             apply
             {
                 let exactCounter = LittleEndian(counters[0..2]);
-                let partialCounter = LittleEndian(counters[3..5]);
+                let partialCounter = LittleEndian(counters[3..6]);
                 use checkConditionQbits = Qubit[2]
                 {
                     within
@@ -280,7 +280,7 @@ namespace MastermindQuantum {
                 set answer = ResultArrayAsBoolArray(res);
             }
             ResetAll(register);
-        } until (correct or iter > 100)  // the fail-safe to avoid going into an infinite loop
+        } until (correct or iter > 10000)  // the fail-safe to avoid going into an infinite loop
         fixup {
             set iter *= 2;
         }
