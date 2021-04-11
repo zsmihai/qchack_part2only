@@ -6,6 +6,8 @@ namespace MastermindQuantum {
     open Microsoft.Quantum.Canon;
     open Microsoft.Quantum.Intrinsic;
     open Microsoft.Quantum.Arrays;
+    open Microsoft.Quantum.Measurement;
+    open Microsoft.Quantum.Convert;
 
     // Task 1.1: The Compare register to integer oracle
     // Inputs:
@@ -209,4 +211,84 @@ namespace MastermindQuantum {
             }
         }
     }
+
+    operation Task_1_7_MastermindOracleNormalized(
+        qubitArray : Qubit[],
+        conditions : Int[][],
+        target: Qubit
+    ) : Unit is Adj+ Ctl
+    {
+        let registers = Chunks(2, qubitArray);
+        let regLEs = Mapped(LittleEndian(_), registers);
+        Task_1_6_MastermindOracle(regLEs, conditions, target);
+    }
+
+
+    //////////////////////////////////////
+    //This part, until the end if file is copied from or inspired by https://github.com/microsoft/QuantumKatas/blob/main/SolveSATWithGrover/ReferenceImplementation.qs
+    //////////////////////////////////////
+        operation OracleConverterImpl_Reference (markingOracle : ((Qubit[], Qubit) => Unit is Adj), register : Qubit[]) : Unit is Adj {
+            use target = Qubit();
+            within {
+                // Put the target into the |-⟩ state, perform the apply functionality, then put back into |0⟩ so we can return it
+                X(target);
+                H(target);
+            }
+            apply {
+                // Apply the marking oracle; since the target is in the |-⟩ state,
+                // flipping the target if the register satisfies the oracle condition will apply a -1 factor to the state
+                markingOracle(register, target);
+            }
+        }
+        
+        function OracleConverter_Reference (markingOracle : ((Qubit[], Qubit) => Unit is Adj)) : (Qubit[] => Unit is Adj) {
+            return OracleConverterImpl_Reference(markingOracle, _);
+        }
+
+        operation GroversAlgorithm_Loop (register : Qubit[], oracle : ((Qubit[], Qubit) => Unit is Adj), iterations : Int) : Unit {
+        let phaseOracle = OracleConverter_Reference(oracle);
+        ApplyToEach(H, register);
+        for i in 1 .. iterations {
+            phaseOracle(register);
+            within {
+                ApplyToEachA(H, register);
+                ApplyToEachA(X, register);
+            }
+            apply {
+                Controlled Z(Most(register), Tail(register));
+            }
+        }
+    }
+
+    operation GroversForMastermind (
+        conditions : Int[][]
+        ) : (Int[], Bool)
+    {
+        mutable answer = new Bool[8];
+        use (register, output) = (Qubit[8], Qubit());
+        mutable correct = false;
+        mutable iter = 1;
+        let oracle = Task_1_7_MastermindOracleNormalized(_, conditions, _);
+        repeat {
+            Message($"Trying search with {iter} iterations");
+            GroversAlgorithm_Loop(register, oracle, iter);
+            let res = MultiM(register);
+            // to check whether the result is correct, apply the oracle to the register plus ancilla after measurement
+            oracle(register, output);
+            if (MResetZ(output) == One) {
+                set correct = true;
+                set answer = ResultArrayAsBoolArray(res);
+            }
+            ResetAll(register);
+        } until (correct or iter > 100)  // the fail-safe to avoid going into an infinite loop
+        fixup {
+            set iter *= 2;
+        }
+        
+        
+        let answerRegisters = Chunks(2, answer);
+        let answerInts = Mapped(BoolArrayAsInt(_), answerRegisters);
+        return (answerInts, correct);
+    }
+
 }

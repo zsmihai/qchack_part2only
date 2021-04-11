@@ -105,4 +105,26 @@
         
         Message("Task_1_6_SimpleTest passed.");
     }
+
+    @Test("QuantumSimulator")
+    operation Task_1_6_SimpleTest2 () : Unit {
+        use target = Qubit() 
+        {
+            use currentGuess = Qubit[8]
+            {
+                let registers = Chunks(2, currentGuess);
+                let regLEs = Mapped(LittleEndian(_), registers);
+                MastermindQuantum.Task_1_6_MastermindOracle(
+                    regLEs,
+                    [[0, 0, 0, 0, 0, 0]],
+                    target
+                );
+                AssertMeasurement([PauliZ], [target], One, "Oracle replied with True when it should have said False.");
+                Reset(target);
+                ResetAll(currentGuess);
+            }
+        }
+        
+        Message("Task_1_6_SimpleTest2 passed.");
+    }
 }
