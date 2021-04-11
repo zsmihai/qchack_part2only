@@ -23,6 +23,7 @@ namespace MastermindQuantum
         /// <list type="bullet">
         /// <item><description>`all` or blank : run all puzzles (default)</description></item>
         /// <item><description>`4s4c` : test classic algorthm on a 4slot-4colors puzzle</description></item>
+        /// <item><description>`4s4cQ` : test quantum algorthm on a 4slot-4colors puzzle</description></item>
         /// </list>
         /// </param>
         static async Task Main(string[] args)
@@ -31,35 +32,57 @@ namespace MastermindQuantum
 
             //var restored = await HelloQ.Run(sim);
             //DEBUG
-            List<int[]> puzzle6 = new List<int[]>(){ 
+            /*List<int[]> puzzle6 = new List<int[]>(){ 
                 new int[]{0,3,1,2,1,1},
                 new int[]{0,3,1,2,2,1},
                 new int[]{0,3,1,2,3,1}
             };
             ShowGrid(puzzle6,1);
-            Pause();
+            Pause();*/
 
             //MAIN            
             var puzzleToRun = args.Length > 0 ? args[0] : "all";
 
             //var sim = new QuantumSimulator(throwOnReleasingQubitsNotInZeroState: true);
 
-            //MastermindClassic mMastermindClassic = new MastermindClassic();
+            MastermindClassic mastermindClassic = new MastermindClassic();
             //MastermindQuantum mastermindQuantum = new MastermindQuantum();
 
             if (puzzleToRun == "4s4c" || puzzleToRun == "all") 
             {
-                // Test solving a 4x4 Mastermind puzzle using XXX computing.
-                // Missing numbers are denoted by 0.
-                int[] answer4 = { 2,3,4,1, 4, 0 };
-                int[] color4 = { 1,2,3,4 };
-                List<int[]> puzzle4 = new List<int[]>(){ new int[]{0,0,0,0,0,0} };
-                Console.WriteLine("Solving 4slot-4colors using XXX computing.");
-                ShowGrid(puzzle4,1);
+                // Test solving a 4s4c Mastermind puzzle using classical computing
+                int[] answer4 = { 1,2,3,0, 4,0 };
+                int[] color4 = { 1,2,3,0 };
                 bool resultFound = false;
-                //bool resultFound = mastermindClassic.SolveMastermindClassic(puzzle4, answer4);
-                //bool resultFound = mastermindQuantum.QuantumSolve(puzzle4, color4, sim).Result;
+
+                Console.WriteLine("Answer of current trial.");
+                ShowGrid(new List<int[]>(){answer4}, 1);
+
+                List<int[]> puzzle4 = new List<int[]>();
+                Console.WriteLine("Solving 4slot-4colors using Classical computing.");
+                resultFound = mastermindClassic.Solve(puzzle4, answer4);
+
                 VerifyAndShowResult(resultFound, puzzle4, answer4);
+                Console.WriteLine($"Classical Computing used {puzzle4.Count} trials !");
+                Console.WriteLine();
+            }
+            if (puzzleToRun == "4s4cQ" || puzzleToRun == "all") 
+            {
+                // Test solving a 4s4c Mastermind puzzle using quantum computing.
+                int[] answer4 = { 1,2,3,0, 4,0 };
+                int[] color4 = { 1,2,3,0 };
+                bool resultFound = false;
+
+                Console.WriteLine("Answer of current trial.");
+                ShowGrid(new List<int[]>(){answer4}, 1);
+
+                List<int[]> puzzleQ = new List<int[]>();
+                // Console.WriteLine("Solving 4slot-4colors using Quantum computing.");
+                // resultFound = mastermindQuantum.QuantumSolve(puzzleQ, answer4, sim).Result;
+                // Console.WriteLine($"Quantum Computing used {puzzleQ.Count} trials !");
+                VerifyAndShowResult(resultFound, puzzleQ, answer4);
+                Console.WriteLine($"Quantum Computing used {puzzleQ.Count} trials !");
+                Console.WriteLine();
             }
 
             Console.WriteLine("Finished.");
