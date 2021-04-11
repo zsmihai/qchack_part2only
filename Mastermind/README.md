@@ -11,7 +11,7 @@ description: "This project uses Grover's search algorithm to solve Mastermind pu
 # Solving Mastermind using Grover's Algorithm
 
 
-This program demonstrates solving Mastermind puzzle using Grovers algorithm.
+This program demonstrates solving a slightly modified version of the Mastermind puzzle (https://en.wikipedia.org/wiki/Mastermind_(board_game) ) using Grover's algorithm.
      
 The code supports 4 colors 4 slots Mastermind puzzles.
           
@@ -28,6 +28,8 @@ For 4 colors 4 slots puzzles, the same rules apply:
 ```
 Mastermind is a decision problem that given a set of guesses and the number of black and white pegs scored for each guess, is there exist one secret pattern that generate the exact scores.
 
+The main Q# Library is structured similarly to a Kata, where the implementation was broken down into relatively small bits. 
+
 ## Prerequisites ##
 
 - The Microsoft [Quantum Development Kit](https://docs.microsoft.com/azure/quantum/install-overview-qdk/).
@@ -42,6 +44,9 @@ You can also choose a specific puzzle to solve by adding the puzzle name as belo
 -   4s4cQ : test Quantum algorthm on a 4 colors 4 slots puzzle
 
 For example, `dotnet run 4s4cQ` will run the Quantum solution for a 4 colors 4 slots puzzle
+
+
+To test the library, use the `dotnet test` command from your terminal, to run the test project.
 
 ## Manifest ##
 
